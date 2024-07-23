@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
             throw new ExpiredTokenException("The token has expired");
         }
 
-        return null;
+        return token;
     }
 
     @Override

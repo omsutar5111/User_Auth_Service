@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.UserAuthService.dtos.LoginRequestDto;
 import com.example.UserAuthService.dtos.LogoutRequestDto;
 import com.example.UserAuthService.dtos.SignupRequestDto;
+import com.example.UserAuthService.dtos.TokenResponseDto;
 import com.example.UserAuthService.dtos.ValidateTokenRequestDto;
 import com.example.UserAuthService.exceptions.ExpiredTokenException;
 import com.example.UserAuthService.exceptions.InvalidTokenException;
@@ -64,11 +65,16 @@ public class UserController {
     }
 
     @PostMapping("/validate-token")
-    public ResponseEntity<Token> validateToken(@RequestBody ValidateTokenRequestDto requestDto) {
+    public ResponseEntity<TokenResponseDto> validateToken(@RequestBody ValidateTokenRequestDto requestDto) {
         try {
             // TODO basic validations
             Token token = this.userService.validateToken(requestDto.getToken());
-            return new ResponseEntity<>(token, HttpStatusCode.valueOf(200));
+            TokenResponseDto tokenResponseDto = new TokenResponseDto(
+                    token.getId(),
+                    token.getValue(),
+                    token.getExpiresAt(),
+                    token.isActive());
+            return new ResponseEntity<>(tokenResponseDto, HttpStatusCode.valueOf(200));
         } catch (ExpiredTokenException ete) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(401));
         } catch (InvalidTokenException ite) {
